@@ -41,8 +41,8 @@ def make_pod(
     run_privileged=False,
     env=None,
     working_dir=None,
-    volumes=None,
-    volume_mounts=None,
+    volumes=[],
+    volume_mounts=[],
     labels=None,
     annotations=None,
     cpu_limit=None,
@@ -262,7 +262,7 @@ def make_pod(
         image_pull_policy=image_pull_policy,
         lifecycle=lifecycle_hooks,
         resources=V1ResourceRequirements(),
-        volume_mounts=[get_k8s_model(V1VolumeMount, obj) for obj in (volume_mounts or [])],
+        volume_mounts=volume_mounts,
     )
 
     if service_account is None:
@@ -309,7 +309,7 @@ def make_pod(
     if init_containers:
         pod.spec.init_containers = [get_k8s_model(V1Container, obj) for obj in init_containers]
     if volumes:
-        pod.spec.volumes = [get_k8s_model(V1Volume, obj) for obj in volumes]
+        pod.spec.volumes = volumes
     else:
         # Keep behaving exactly like before by not cleaning up generated pod
         # spec by setting the volumes field even though it is an empty list.
